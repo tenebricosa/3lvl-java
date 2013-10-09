@@ -13,7 +13,6 @@ public class ServerCalculator extends Server {
 
     @Override
     public void do_it() throws Exception {
-        System.out.println("server calc");
         Calculator calc = new Calculator();
 
         while (true) {
