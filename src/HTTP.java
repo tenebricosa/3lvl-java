@@ -17,7 +17,7 @@ public class HTTP extends Server {
     public void do_it(Socket socket) throws Exception {
         this.socket = socket;
         String request = make_request();
-        request = "<!DOCTYPE HTML><html><body>" + request + "</body></html>";
+        request = "<!DOCTYPE HTML><html><body><h1 style='color: red'>" + request + "</h1></body></html>";
         make_response(request);
     }
 
