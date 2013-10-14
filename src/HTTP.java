@@ -6,7 +6,6 @@ import java.net.Socket;
 
 public class HTTP extends Server {
     Socket socket;
-    String s;
 
     public static void main(String[] args) {
         Server server = new HTTP();
@@ -17,21 +16,25 @@ public class HTTP extends Server {
     @Override
     public void do_it(Socket socket) throws Exception {
         this.socket = socket;
-        make_request();
-//        BufferedReader file = new BufferedReader(new FileReader("src/index.html"));
-        make_response("Hello");
+        String request = make_request();
+        request = "<!DOCTYPE HTML><html><body>" + request + "</body></html>";
+        make_response(request);
     }
 
-    public void make_request() throws Exception {
+    public String make_request() throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        String text = "";
+        String buff = "";
+
         while (true) {
-            s = br.readLine();
-            System.out.println(s);
-            if (s == null || s.trim().length() == 0) {
+            buff = br.readLine();
+            text += buff + "\n";
+            if (buff == null || buff.trim().length() == 0) {
                 break;
             }
-
         }
+        System.out.println(text);
+        return text;
     }
 
     public void make_response(String html) throws Exception {
