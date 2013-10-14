@@ -1,10 +1,3 @@
-/**
- * Created with IntelliJ IDEA.
- * User: пользователь
- * Date: 09.10.13
- * Time: 21:23
- * To change this template use File | Settings | File Templates.
- */
 public interface Backbone {
     public double read_double(String str) throws Message;
 

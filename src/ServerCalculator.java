@@ -1,17 +1,9 @@
-/**
- * Created with IntelliJ IDEA.
- * User: пользователь
- * Date: 10.10.13
- * Time: 0:32
- * To change this template use File | Settings | File Templates.
- */
 public class ServerCalculator extends Server {
     public static void main(String[] args) {
         Server server = new ServerCalculator();
-        server.start();
+        server.start(12345);
     }
 
-    @Override
     public void do_it() throws Exception {
         Calculator calc = new Calculator();
 
@@ -19,7 +11,7 @@ public class ServerCalculator extends Server {
             double o1;
             double o2;
 
-            out.writeUTF("Введите первый оператор");
+            out.writeUTF("Введите первое число");
             while (1 == 1) {
                 String line = in.readUTF() ;
                 try {
@@ -29,7 +21,7 @@ public class ServerCalculator extends Server {
                     out.writeUTF(m.toString());
                 }
             }
-            out.writeUTF("Введите второй оператор");
+            out.writeUTF("Введите второе число");
             while (1 == 1) {
                 String line = in.readUTF() ;
                 try {

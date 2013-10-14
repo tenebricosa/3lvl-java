@@ -8,7 +8,7 @@ public class Calculator implements Backbone {
         double o1;
         double o2;
 
-        System.out.println("Введите первый оператор");
+        System.out.println("Введите первое число");
         while (1 == 1) {
             String line = keyboard.next();
             try {
@@ -18,7 +18,7 @@ public class Calculator implements Backbone {
                 System.out.println(m);
             }
         }
-        System.out.println("Введите второй оператор");
+        System.out.println("Введите второе число");
         while (1 == 1) {
             String line = keyboard.next();
             try {
@@ -72,7 +72,7 @@ public class Calculator implements Backbone {
         } else if (str.equals("/")) {
             return str;
         } else {
-            throw new Message("Вводите правильное значение");
+            throw new Message("Вводите правильное значение");  //код никогда не выполнится
         }
     }
 
