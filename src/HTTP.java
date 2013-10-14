@@ -3,6 +3,7 @@ import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.regex.Pattern;
 
 public class HTTP extends Server {
     Socket socket;
@@ -17,7 +18,8 @@ public class HTTP extends Server {
     public void do_it(Socket socket) throws Exception {
         this.socket = socket;
         String request = make_request();
-        request = "<!DOCTYPE HTML><html><body><h1 style='color: red'>" + request + "</h1></body></html>";
+        String url = request.split("\r\n")[0];
+        request = parse_calc(url);
         make_response(request);
     }
 
@@ -28,24 +30,54 @@ public class HTTP extends Server {
 
         while (true) {
             buff = br.readLine();
-            text += buff + "\n";
+            text += buff + "\r\n";
             if (buff == null || buff.trim().length() == 0) {
                 break;
             }
         }
-        System.out.println(text);
         return text;
     }
 
-    public void make_response(String html) throws Exception {
+    public void make_response(String str) throws Exception {
         OutputStream sout = socket.getOutputStream();
+        String html = "<!DOCTYPE HTML><html><body><h1 style='color: red'>" + str + "</h1></body></html>";
         String response = "HTTP/1.1 200 OK\r\n" +
                 "Server: OloloServer/2013-10-13\r\n" +
                 "Content-Type: text/html\r\n" +
-                "Content-Length: " + html.length() + "\r\n" +
+                "Content-Length: " + (html.length() + 0) + "\r\n" +
                 "Connection: close\r\n\r\n";
         String result = response + html;
         sout.write(result.getBytes());
         sout.flush();
+    }
+
+    public String parse_calc(String str) {
+        String[] lines = str.split(" ");
+        if (lines.length != 3) {
+            return "Формат: http://localhost:8080/5+5";
+        }
+        String method = lines[0];
+        String url = lines[1];
+        url = url.substring(1);
+        String protocol = lines[2];
+        String[] operators = "+ - * /".split(" ");
+        for (int i = 0; i < operators.length; i++) {
+            String o = operators[i];
+            String[] os = url.split(Pattern.quote(o));
+            if (os.length == 2) {
+                Calculator calc = new Calculator();
+                try {
+                    String out;
+                    Double o1 = calc.read_double(os[0]);
+                    Double o2 = calc.read_double(os[1]);
+                    Double result = calc.get_result(o1, o2, o);
+                    out = o1 + " " + o + " " + o2 + " = " + result;
+                    return out;
+                } catch (Message m) {
+                    return m.toString();
+                }
+            }
+        }
+        return "Формат: http://localhost:8080/5+5";
     }
 }
