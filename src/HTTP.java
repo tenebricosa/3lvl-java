@@ -8,16 +8,11 @@ import java.util.regex.Pattern;
 public class HTTP extends Server {
     Socket socket;
 
-    public static void main(String[] args) throws Throwable{
-        try {
-            ServerSocket ss = new ServerSocket(8080); // создаем сокет сервера и привязываем его к вышеуказанному порту
-            System.out.println("Ожидание клиента");
-            while (true) {
-                Socket socket = ss.accept();
-                new HTTP(socket).do_it();
-            }
-        } catch (Throwable x) {
-            System.out.println("Произошла ошибка " + x);
+    public static void main(String[] args) throws Throwable {
+        ServerSocket ss = new ServerSocket(8080); // создаем сокет сервера и привязываем его к вышеуказанному порту
+        while (true) {
+            Socket socket = ss.accept();
+            new Thread(new HTTP(socket)).start();
         }
     }
 
@@ -26,11 +21,15 @@ public class HTTP extends Server {
         socket = s;
     }
 
-    public void do_it() throws Exception {
-        String request = make_request();
-        String url = request.split("\r\n")[0];
-        request = parse_calc(url);
-        make_response(request);
+    public void run() {
+        try {
+            String request = make_request();
+            String url = request.split("\r\n")[0];
+            request = parse_calc(url);
+            make_response(request);
+        } catch (Throwable x) {
+            System.out.println("Произошла ошибка " + x);
+        }
     }
 
     public String make_request() throws Exception {
