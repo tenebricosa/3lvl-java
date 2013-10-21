@@ -1,22 +1,32 @@
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.regex.Pattern;
 
 public class HTTP extends Server {
     Socket socket;
 
-    public static void main(String[] args) {
-        Server server = new HTTP();
-        server.start(8080);
+    public static void main(String[] args) throws Throwable{
+        try {
+            ServerSocket ss = new ServerSocket(8080); // создаем сокет сервера и привязываем его к вышеуказанному порту
+            System.out.println("Ожидание клиента");
+            while (true) {
+                Socket socket = ss.accept();
+                new HTTP(socket).do_it();
+            }
+        } catch (Throwable x) {
+            System.out.println("Произошла ошибка " + x);
+        }
     }
 
+    private HTTP(Socket s) throws Throwable {
+        super(s);
+        socket = s;
+    }
 
-    @Override
-    public void do_it(Socket socket) throws Exception {
-        this.socket = socket;
+    public void do_it() throws Exception {
         String request = make_request();
         String url = request.split("\r\n")[0];
         request = parse_calc(url);

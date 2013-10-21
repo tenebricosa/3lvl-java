@@ -4,40 +4,32 @@ import java.io.*;
 public class Server {
     public DataInputStream in;
     public DataOutputStream out;
+    Socket socket;
 
-    public static void main(String[] args) {
-        Server server = new Server();
-        server.start(12345);
-
-    }
-
-    public void start(int port) {
+    public static void main(String[] args) throws Throwable{
         try {
-            ServerSocket ss = new ServerSocket(port); // создаем сокет сервера и привязываем его к вышеуказанному порту
+            ServerSocket ss = new ServerSocket(12345); // создаем сокет сервера и привязываем его к вышеуказанному порту
             System.out.println("Ожидание клиента");
             while (true) {
-                Socket socket = ss.accept(); // заставляем сервер ждать подключений и выводим сообщение когда кто-то связался с сервером
-                System.out.println("Клиент подключился");
-
-                // Берем входной и выходной потоки сокета, теперь можем получать и отсылать данные клиенту.
-                InputStream sin = socket.getInputStream();
-                OutputStream sout = socket.getOutputStream();
-
-                // Конвертируем потоки в другой тип, чтоб легче обрабатывать текстовые сообщения.
-                in = new DataInputStream(sin);
-                out = new DataOutputStream(sout);
-
-                do_it(socket);
+                Socket socket = ss.accept();
+                new Server(socket).do_it();
             }
-
-        } catch (Exception x) {
+        } catch (Throwable x) {
             System.out.println("Произошла ошибка " + x);
         }
     }
+    public Server(Socket s)  throws Throwable {
+        this.socket = s;
+        // Берем входной и выходной потоки сокета, теперь можем получать и отсылать данные клиенту.
+        InputStream sin = socket.getInputStream();
+        OutputStream sout = socket.getOutputStream();
 
+        // Конвертируем потоки в другой тип, чтоб легче обрабатывать текстовые сообщения.
+        this.in = new DataInputStream(sin);
+        this.out = new DataOutputStream(sout);
+    }
 
-    public void do_it(Socket socket) throws Exception {
-
+    public void do_it() throws Exception {
         out.writeUTF("Привет!");
         out.flush();
 
