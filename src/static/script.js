@@ -1,24 +1,43 @@
 $(document).ready(function(){
-	$(".new__post").click(function(){
-		var bio_table = $(".content__bio_table")
-		var line = $("<tr>").addClass("bio_table__row__edit bio_table__row").prependTo(bio_table)
-		var cell = $("<td>").addClass("bio_table__year").appendTo(line)
-		var content = $("<span>").addClass("line__year").appendTo(cell)
-		var content = $("<span>").addClass("line__month").appendTo(cell)
-		var input = $("<input>").attr("type","text").attr("placeholder","Year").attr("maxlength","4").addClass("line__year__editor").appendTo(cell).focus()
-		var input = $("<input>").attr("type","text").attr("placeholder","Month").attr("maxlength","2").addClass("line__month__editor").appendTo(cell)
-		var cell = $("<td>").addClass("bio_table__event").appendTo(line)
-		var content = $("<span>").addClass("line__event").appendTo(cell)
-		var input = $("<textarea>").attr("placeholder","Input an event").addClass("line__event__editor").appendTo(cell)
-		var cell = $("<td>").addClass("bio_table__buttons").appendTo(line)
-		var edit = $("<a>").attr("href","#").addClass("line__buttons__edit").appendTo(cell).text('Редактировать')
-		var save = $("<a>").attr("href","#").addClass("line__buttons__save").appendTo(cell).text('Сохранить')
-		var br = $("<br>").appendTo(cell)
-		var del = $("<a>").attr("href","#").addClass("line__buttons__delete").appendTo(cell).text('Удалить')
-	})
+
+    function createPost(){
+            var bio_table = $(".content__bio_table")
+            var line = $("<tr>").addClass("bio_table__row__edit bio_table__row").prependTo(bio_table)
+            var cell = $("<td>").addClass("bio_table__year").appendTo(line)
+            var content = $("<span>").addClass("line__year").appendTo(cell)
+            var content = $("<span>").addClass("line__month").appendTo(cell)
+            var input = $("<input>").attr("type","text").attr("placeholder","Year").attr("maxlength","4").addClass("line__year__editor").appendTo(cell).focus()
+            var input = $("<input>").attr("type","text").attr("placeholder","Month").attr("maxlength","2").addClass("line__month__editor").appendTo(cell)
+            var cell = $("<td>").addClass("bio_table__event").appendTo(line)
+            var content = $("<span>").addClass("line__event").appendTo(cell)
+            var input = $("<textarea>").attr("placeholder","Input an event").addClass("line__event__editor").appendTo(cell)
+            var cell = $("<td>").addClass("bio_table__buttons").appendTo(line)
+            var edit = $("<a>").attr("href","#").addClass("line__buttons__edit").appendTo(cell).text('Редактировать')
+            var save = $("<a>").attr("href","#").addClass("line__buttons__save").appendTo(cell).text('Сохранить')
+            var br = $("<br>").appendTo(cell)
+            var del = $("<a>").attr("href","#").addClass("line__buttons__delete").appendTo(cell).text('Удалить')
+            return line
+        }
+
+	$(".new__post").click(createPost)
+
+	var bio = $.cookie("bio")
+	if (bio) {
+
+	   $.map($.evalJSON(bio), function(data){
+            var tr = createPost()
+            tr.removeClass('bio_table__row__edit')
+            console.log(data)
+            tr.find('.line__year').text(data.year)
+            tr.find('.line__month').text(data.month)
+            tr.find('.line__event').text(data.text)
+	   })
+
+	}
+
 	
 	function sort() {
-		$('.content__bio_table .bio_table__row').sort(function(i,e){
+		 data = $('.content__bio_table .bio_table__row').sort(function(i,e){
 			
 			a = parseInt($(i).find('.line__year').text(),10) *12 + parseInt($(i).find('.line__month').text(),10)
 			b = parseInt($(e).find('.line__year').text(),10) *12 + parseInt($(e).find('.line__month').text(),10)
@@ -33,8 +52,16 @@ $(document).ready(function(){
 
 		}).each(function() {
 			$('.content__bio_table').append(this)
-			console.log(this)
+		}).map(function() {
+            var tr = $(this)
+            var year = tr.find('.line__year').text()
+            var month = tr.find('.line__month').text()
+            var text = tr.find('.line__event').text()
+            return {year:year,month:month,text:text}
 		})
+
+		var json = $.toJSON(data.get())
+		$.cookie("bio",json)
 	}
 
 	sort()
@@ -63,6 +90,7 @@ $(document).ready(function(){
 	$('.content__bio_table').on('click','.line__buttons__delete', function(e){
 		if (confirm('Are you sure?')) {
 			$(this).parents('.bio_table__row').remove()
+			sort()
 		}
 	})
 })
