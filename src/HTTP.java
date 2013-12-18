@@ -70,8 +70,7 @@ public class HTTP extends Server {
         url = url.substring(1);
         String protocol = lines[2];
         String[] operators = "+ - * /".split(" ");
-        for (int i = 0; i < operators.length; i++) {
-            String o = operators[i];
+        for (String o : operators) {
             String[] os = url.split(Pattern.quote(o));
             if (os.length == 2) {
                 Calculator calc = new Calculator();
