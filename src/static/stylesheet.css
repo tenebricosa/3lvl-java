@@ -1,0 +1,252 @@
+@import «font-awesome.css;
+@font-face {
+	font-family: 'FontAwesome';
+	src: url('files/font/fontawesome-webfont.eot');
+	src: url('files/font/fontawesome-webfont.eot?#iefix') format('embedded-opentype'),
+	url('files/font/fontawesome-webfont.woff') format('woff'),
+	url('files/font/fontawesome-webfont.ttf') format('truetype'),
+	url('files/font/fontawesome-webfont.svg#FontAwesome') format('svg');
+	font-weight: normal;
+	font-style: normal;
+ }
+
+i {
+	font-style: normal;
+	color: black;
+}
+
+html, body {
+	margin: 0;
+	padding: 0;
+	font-family: 'PT Serif', serif;
+}
+
+a {
+	text-decoration: none;
+	color: inherit;
+}
+
+a:hover {
+	color: #617192;
+}
+
+ul {
+	list-style: none;
+}
+
+.cover {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 30%;
+	height: 100%;
+	color: #fff;
+}
+
+.cover__content {
+	background-image: url('http://cs7002.vk.me/c540107/v540107018/90f5/rsSe0oztV64.jpg');
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	background-position: center;
+	background-size: cover;
+	box-shadow: inset -1px 0 0 rgba(0,0,0,0.3);
+}
+
+.content__introduction {
+	position: absolute;
+	top: 60%;
+	left: 10%;
+	background: rgba(0,0,0,0.5);
+	box-shadow: 0px 0px 2px 2px rgba(200,200,200,0.5);
+	width: 80%;
+	height: 30%;
+}
+
+.introduction__content {
+	position: relative;
+	left: 5%;
+	width: 90%;
+	height: 80%;
+}
+
+.introduction__title {
+	font-size: 28px;
+	margin-top: 10px;
+	margin-bottom: 0;
+}
+
+.introduction__title a:hover {
+	color: inherit;
+}
+
+.introduction__text {
+	font-size: 16px;
+}
+
+.wrapper {
+	position: absolute;
+	left: 30%;
+}
+
+.content__menu {
+	position: relative;
+	left: 60px;
+	top: 30px;
+}
+
+.content__menu li {
+	float: left;
+	margin-right: 60px;
+}
+
+.menu__item__active {
+	color: #CCD2A4;
+}
+
+.content__main {
+	position: relative;
+	top: 80px;
+	/*background-color: red;*/
+	min-height: 400px;
+	min-width: 400px;
+	max-width: 800px;
+	left: 60px;
+	border-top: 1px solid #CCD2A4;
+}
+
+.main__me ul {
+	width: 40%;
+	float: left;
+	margin: 0 4px;
+}
+
+.main__me li {
+	padding-bottom: 10px;
+}
+
+.main__me [class^="icon-"]:before, [class*=" icon-"]:before {
+	font-size: inherit;
+	color: #CCD2A4;
+}
+
+.main__me .icon-double-angle-right:before {
+	content: "\f101";
+}
+
+[class^="icon-"]:before, [class*=" icon-"]:before {
+	font-family: FontAwesome;
+	font-weight: normal;
+	font-style: normal;
+	display: inline-block;
+	margin: 10px 5px 0 0;
+}
+
+[class^="icon-"]:before, [class*=" icon-"]:before .footer {
+	font-size: 25px;
+}
+
+.content__title {
+	padding: 10px;
+	margin-left: 32px;
+}
+
+.contacts__list {
+	padding-top: 40px;
+}
+
+.contacts__list dt, .contacts__list dd{
+	padding-bottom: 10px;
+}
+
+.contacts__list dt {
+	color: #CCD2A4;
+}
+
+.content__contacts {
+	margin-left: 32px;
+}
+
+.content__bio {
+	padding-top: 30px;
+}
+
+.bio_table__year {
+	color: #CCD2A4;
+	width: 80px;
+}
+
+.bio_table__event {
+	width: 500px;
+}
+
+.bio_table__buttons {
+	width: 50px;
+}
+
+.content__bio_table td {
+	padding-bottom: 30px;
+}
+
+.line__year:after {
+	content: ',';
+}
+
+.bio_table__row__edit .line__year, 
+.bio_table__row__edit .line__month,
+.bio_table__row__edit .line__event,
+.bio_table__row__edit .line__buttons__edit {
+	display: none;
+}
+
+.bio_table__row__edit .line__year__editor, 
+.bio_table__row__edit .line__month__editor,
+.bio_table__row__edit .line__event__editor,
+.bio_table__row__edit .line__buttons__save {
+	display: inline-block;
+}
+
+.line__year__editor, 
+.line__month__editor,
+.line__event__editor,
+.line__buttons__save {
+	display: none;
+}
+
+.new__post {
+	margin-top: 30px;
+	padding: 8px;
+	width: 80px;
+	text-align: center;
+	background: linear-gradient(to top, #CCD2A4, #fff);
+	border-radius: 5px;
+	margin-left: 39px;
+	color: #617192;
+	box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.25);
+	cursor: pointer;
+}
+
+.line__year__editor {
+	width: 50px;
+	margin-top: 0;
+}
+
+.line__month__editor {
+	width: 50px;
+}
+
+.line__event__editor {
+	width: 480px;
+	height: 42px;
+	margin-top: 3px;
+}
+
+.bio_table__row {
+
+}
+
+.bio_table__row__edit {
+
+}
