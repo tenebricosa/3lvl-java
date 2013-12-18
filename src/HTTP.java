@@ -53,7 +53,7 @@ public class HTTP extends Server {
         String response = "HTTP/1.1 200 OK\r\n" +
                 "Server: OloloServer/2013-10-13\r\n" +
                 "Content-Type: text/html\r\n" +
-                "Content-Length: " + (html.length() + 0) + "\r\n" +
+                "Content-Length: " + html.getBytes().length + "\r\n" +
                 "Connection: close\r\n\r\n";
         String result = response + html;
         sout.write(result.getBytes());
