@@ -16,7 +16,7 @@ public class HTTP extends Server {
         }
     }
 
-    private HTTP(Socket s) throws Throwable {
+    protected HTTP(Socket s) throws Throwable {
         super(s);
         socket = s;
     }
