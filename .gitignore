@@ -2,6 +2,5 @@
 .idea
 out
 
-*.java
 *.iml
 *.MF
