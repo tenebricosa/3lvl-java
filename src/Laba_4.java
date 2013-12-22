@@ -5,6 +5,12 @@ import java.net.URLDecoder;
 import java.util.*;
 
 import freemarker.template.*;
+import logic.Bio;
+
+import java.sql.SQLException;
+import java.util.List;
+
+import DAO.Factory;
 
 
 public class Laba_4 extends HTTP {
@@ -15,7 +21,7 @@ public class Laba_4 extends HTTP {
     int code = 200;
     Map<String, String> headers;
 
-    List<Bio> bioList = new ArrayList<Bio>(10);
+    List<Bio> bioList = Factory.getInstance().getBioDAO().getAllBios();
 
     public static void main(String[] args) throws Throwable {
         ServerSocket ss = new ServerSocket(8080); // создаем сокет сервера и привязываем его к вышеуказанному порту
@@ -37,7 +43,6 @@ public class Laba_4 extends HTTP {
     }
 
     public void run() {
-        read_database();
         try {
             make_request();
             if (url.contains("static")) {
@@ -66,8 +71,14 @@ public class Laba_4 extends HTTP {
         }
     }
 
-    public static Map<String, String> getQueryMap(String query) {
-        String[] params = query.split("&");
+    public Map<String, String> getQueryMap() throws Exception {
+        int contentLength = Integer.parseInt(headers.get("Content-Length"));
+        StringBuilder requestContent = new StringBuilder();
+        for (int i = 0; i < contentLength; i++) {
+            requestContent.append((char) br.read());
+        }
+        String result = URLDecoder.decode(requestContent.toString(), "UTF-8");
+        String[] params = result.split("&");
         Map<String, String> map = new HashMap<String, String>();
         for (String param : params) {
             String name = param.split("=")[0];
@@ -77,99 +88,40 @@ public class Laba_4 extends HTTP {
         return map;
     }
 
+
     public void proceed_api() throws Exception {
         if (method.equals("GET")) {
             String result = "Need POST method!";
             make_response(result);
 
         } else if (method.equals("POST")) {
-            int contentLength = Integer.parseInt(headers.get("Content-Length"));
-            StringBuilder requestContent = new StringBuilder();
-            for (int i = 0; i < contentLength; i++) {
-                requestContent.append((char) br.read());
-            }
-            String result = URLDecoder.decode(requestContent.toString(), "UTF-8");
-            Map<String, String> params = getQueryMap(result);
-            int id = Integer.parseInt(params.get("id"));
-            String year = params.get("year");
-            String month = params.get("month");
-            String text = params.get("text");
-            Bio bi = new Bio(id, Integer.parseInt(year), Integer.parseInt(month), text);
-            Bio b = null;
+            Map<String, String> params = getQueryMap();
+            Bio b = new Bio();
+            b.setYear(Integer.parseInt(params.get("year")));
+            b.setMonth(Integer.parseInt(params.get("month")));
+            b.setText(params.get("text"));
+            if (params.containsKey("id")) {
+                int id = Integer.parseInt(params.get("id"));
+                b.setId(id);
+                Factory.getInstance().getBioDAO().updateBio(b);
 
-            for (Bio o : bioList) {
-                if (o.id == id) {
-                    b = o;
-                }
+            } else {
+                Factory.getInstance().getBioDAO().addBio(b);
             }
-            if (b != null) {
-                bioList.remove(b);
-            }
-            bioList.add(bi);
+            make_response("" + b.getId());
 
         } else if (method.equals("DELETE")) {
-            int contentLength = Integer.parseInt(headers.get("Content-Length"));
-            StringBuilder requestContent = new StringBuilder();
-            for (int i = 0; i < contentLength; i++) {
-                requestContent.append((char) br.read());
-            }
-            String result = URLDecoder.decode(requestContent.toString(), "UTF-8");
-            Map<String, String> params = getQueryMap(result);
+            Map<String, String> params = getQueryMap();
             int id = Integer.parseInt(params.get("id"));
-            Bio b = null;
-            for (Bio o : bioList) {
-                if (o.id == id) {
-                    b = o;
-                }
-            }
-            if (b != null) {
-                bioList.remove(b);
-            }
+            Bio b = Factory.getInstance().getBioDAO().getBioById(id);
+            Factory.getInstance().getBioDAO().deleteBio(b);
+            make_response("ok");
         } else {
-        }
-        save_database();
-        make_response("ololo");
-    }
-
-    public void save_database() {
-        try {
-            PrintWriter out = new PrintWriter("database.txt");
-            for (Bio b : bioList) {
-                System.out.println(b.getRepresentation());
-                out.println(b.getRepresentation());
-            }
-            out.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            make_response("ok");
         }
 
     }
 
-    public void read_database() {
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new FileReader("database.txt"));
-            try {
-                StringBuilder sb = new StringBuilder();
-                String line = br.readLine();
-
-                while (line != null) {
-                    if (line.length() > 1) {
-                        bioList.add(Bio.parseBio(line));
-                    }
-                    sb.append(line);
-                    sb.append('\n');
-                    line = br.readLine();
-                }
-                String everything = sb.toString();
-            } finally {
-                br.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
 
     public String make_request() throws Exception {
         request = super.make_request();
