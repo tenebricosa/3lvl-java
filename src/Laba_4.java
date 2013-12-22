@@ -12,8 +12,8 @@ public class Laba_4 extends HTTP {
     String url;
     String method;
     List<Bio> bio = Arrays.asList(
-            new Bio(1,2010, 12, "note1"),
-            new Bio(2,2009, 4, "note2"));
+            new Bio(1, 2010, 12, "note1"),
+            new Bio(2, 2009, 4, "note2"));
 //    Map<String, Bio> bio = new HashMap<String, Bio>();
 
     public static void main(String[] args) throws Throwable {
@@ -40,8 +40,9 @@ public class Laba_4 extends HTTP {
         try {
             make_request();
             if (url.contains("static")) {
-                String path = "C:\\Users\\пользователь\\Documents\\GitHub\\internet\\src";
-                path += url.replace("\\", "\\\\");
+                String path = getClass().getResource("").getPath();
+                path += "../../../src/";
+                path += url.replace("\\", "/");
                 read_file(path);
             } else if (url.equals("/api")) {
                 proceed_api();
