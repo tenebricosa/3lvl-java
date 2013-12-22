@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URLDecoder;
 import java.util.*;
 
 import freemarker.template.*;
@@ -11,10 +12,10 @@ public class Laba_4 extends HTTP {
     String request;
     String url;
     String method;
-    List<Bio> bio = Arrays.asList(
-            new Bio(1,2010, 12, "note1"),
-            new Bio(2,2009, 4, "note2"));
-//    Map<String, Bio> bio = new HashMap<String, Bio>();
+    int code = 200;
+    Map<String, String> headers;
+
+    List<Bio> bioList = new ArrayList<Bio>(10);
 
     public static void main(String[] args) throws Throwable {
         ServerSocket ss = new ServerSocket(8080); // создаем сокет сервера и привязываем его к вышеуказанному порту
@@ -30,18 +31,19 @@ public class Laba_4 extends HTTP {
         socket = s;
         config = new Configuration();
         config.setClassForTemplateLoading(Laba_4.class, "templates");
-//        config.setObjectWrapper( new DefaultObjectWrapper() );
         config.setDefaultEncoding("UTF-8");
-
+        config.setObjectWrapper(ObjectWrapper.BEANS_WRAPPER);
 
     }
 
     public void run() {
+        read_database();
         try {
             make_request();
             if (url.contains("static")) {
-                String path = "C:\\Users\\пользователь\\Documents\\GitHub\\internet\\src";
-                path += url.replace("\\", "\\\\");
+                String path = getClass().getResource("").getPath();
+                path += "../../../src/";
+                path += url.replace("\\", "/");
                 read_file(path);
             } else if (url.equals("/api")) {
                 proceed_api();
@@ -54,23 +56,120 @@ public class Laba_4 extends HTTP {
             }
 
         } catch (Throwable x) {
-            System.out.println("Произошла ошибка " + x);
+            code = 500;
+            x.printStackTrace(new PrintStream(System.out));
+            try {
+                make_response("Server error");
+            } catch (Exception e) {
+                System.out.println("Произошла ошибка " + e);
+            }
+
         }
     }
 
-    public String proceed_api() throws Exception {
+    public static Map<String, String> getQueryMap(String query) {
+        String[] params = query.split("&");
+        Map<String, String> map = new HashMap<String, String>();
+        for (String param : params) {
+            String name = param.split("=")[0];
+            String value = param.split("=")[1];
+            map.put(name, value);
+        }
+        return map;
+    }
+
+    public void proceed_api() throws Exception {
         if (method.equals("GET")) {
-            String result = "";
+            String result = "Need POST method!";
             make_response(result);
 
         } else if (method.equals("POST")) {
-//            Bio o = new Bio(1, 2013, 1, "oLOLOLo");
-//            bio.put("bio", o);
-//            bio.put("qwe", o);
-        } else {
+            int contentLength = Integer.parseInt(headers.get("Content-Length"));
+            StringBuilder requestContent = new StringBuilder();
+            for (int i = 0; i < contentLength; i++) {
+                requestContent.append((char) br.read());
+            }
+            String result = URLDecoder.decode(requestContent.toString(), "UTF-8");
+            Map<String, String> params = getQueryMap(result);
+            int id = Integer.parseInt(params.get("id"));
+            String year = params.get("year");
+            String month = params.get("month");
+            String text = params.get("text");
+            Bio bi = new Bio(id, Integer.parseInt(year), Integer.parseInt(month), text);
+            Bio b = null;
 
+            for (Bio o : bioList) {
+                if (o.id == id) {
+                    b = o;
+                }
+            }
+            if (b != null) {
+                bioList.remove(b);
+            }
+            bioList.add(bi);
+
+        } else if (method.equals("DELETE")) {
+            int contentLength = Integer.parseInt(headers.get("Content-Length"));
+            StringBuilder requestContent = new StringBuilder();
+            for (int i = 0; i < contentLength; i++) {
+                requestContent.append((char) br.read());
+            }
+            String result = URLDecoder.decode(requestContent.toString(), "UTF-8");
+            Map<String, String> params = getQueryMap(result);
+            int id = Integer.parseInt(params.get("id"));
+            Bio b = null;
+            for (Bio o : bioList) {
+                if (o.id == id) {
+                    b = o;
+                }
+            }
+            if (b != null) {
+                bioList.remove(b);
+            }
+        } else {
         }
-        return "";
+        save_database();
+        make_response("ololo");
+    }
+
+    public void save_database() {
+        try {
+            PrintWriter out = new PrintWriter("database.txt");
+            for (Bio b : bioList) {
+                System.out.println(b.getRepresentation());
+                out.println(b.getRepresentation());
+            }
+            out.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void read_database() {
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader("database.txt"));
+            try {
+                StringBuilder sb = new StringBuilder();
+                String line = br.readLine();
+
+                while (line != null) {
+                    if (line.length() > 1) {
+                        bioList.add(Bio.parseBio(line));
+                    }
+                    sb.append(line);
+                    sb.append('\n');
+                    line = br.readLine();
+                }
+                String everything = sb.toString();
+            } finally {
+                br.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     public String make_request() throws Exception {
@@ -78,22 +177,30 @@ public class Laba_4 extends HTTP {
         String first_line = request.split("\r\n")[0];
         method = first_line.split(" ")[0];
         url = first_line.split(" ")[1];
-        System.out.println(url);
+        headers = new HashMap<String, String>();
+        String[] head;
+        for (String line : request.split("\r\n")) {
+            head = line.split(":");
+            if (head.length > 1) {
+                headers.put(head[0], head[1].trim());
+            }
+        }
+
         return request;
     }
 
     public String render_template(String path) throws Exception {
         Writer out = new StringWriter();
         Template template = config.getTemplate(path);
-        Map root = new HashMap();
-        root.put("bio", bio);
+        Map<String, Object> root = new HashMap<String, Object>();
+        root.put("bioList", bioList);
         template.process(root, out);
         return out.toString();
     }
 
     public void make_response(String html) throws Exception {
         OutputStream sout = socket.getOutputStream();
-        String response = "HTTP/1.1 200 OK\r\n" +
+        String response = "HTTP/1.1 " + code + " OK\r\n" +
                 "Server: OloloServer/2013-10-13\r\n" +
                 "Content-Length: " + html.getBytes().length + "\r\n" +
                 "Connection: close\r\n\r\n";
@@ -103,23 +210,28 @@ public class Laba_4 extends HTTP {
     }
 
     public void read_file(String path) throws Throwable {
-        FileReader file = new FileReader(path);
-        BufferedReader br = new BufferedReader(file);
         try {
-            StringBuilder sb = new StringBuilder();
-            String line = br.readLine();
+            FileReader file = new FileReader(path);
+            BufferedReader br = new BufferedReader(file);
+            try {
+                StringBuilder sb = new StringBuilder();
+                String line = br.readLine();
 
-            while (line != null) {
-                sb.append(line);
-                sb.append('\n');
-                line = br.readLine();
+                while (line != null) {
+                    sb.append(line);
+                    sb.append('\n');
+                    line = br.readLine();
+                }
+                String content = sb.toString();
+                make_response(content);
+
+            } finally {
+                br.close();
             }
-            String content = sb.toString();
-            make_response(content);
 
-        } finally {
-            br.close();
+        } catch (FileNotFoundException a) {
+            code = 404;
+            make_response("File not found");
         }
-
     }
 }

@@ -7,9 +7,9 @@
     <link href='http://fonts.googleapis.com/css?family=PT+Serif:400,700&subset=latin,cyrillic' rel='stylesheet'
           type='text/css'>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <!--<script type="text/javascript" src="/static/script.js"></script>-->
     <script type="text/javascript" src="/static/jquery.cookie.js"></script>
     <script type="text/javascript" src="/static/jquery.json.js"></script>
+    <script type="text/javascript" src="/static/script.js"></script>
 </head>
 <body>
 <aside class="cover">
@@ -26,6 +26,11 @@
     </div>
 </aside>
 <div class="wrapper">
+
+    <form action="/api" method="POST">
+        <input type="text" name="test" value="olo">
+        <button type="submit">asd</button>
+    </form>
     <div class="wrapper__content">
         <ul class="content__menu">
             <li>
@@ -44,16 +49,17 @@
             </div>
             <div class="content__bio">
                 <table class="content__bio_table">
-                    <#list bio as b>
+                    <#list bioList as b>
                         <tr class="bio_table__row">
                             <td class="bio_table__year">
-                                <span class="line__year">${b.getYear()}</span>
-                                <span class="line__month">${b.getMonth}</span>
+                                <span class="line__year">${b.year}</span>
+                                <span class="line__month">${b.month}</span>
+                                <input type="hidden" value="${b.id}" class="line__id__editor" name="id">
                                 <input type="text" placeholder="Year" maxlength="4" class="line__year__editor">
                                 <input type="text" placeholder="Month" maxlength="2" class="line__month__editor">
                             </td>
                             <td class="bio_table__event">
-                                <span class="line__event">${b.getText()}</span>
+                                <span class="line__event">${b.text}</span>
                                 <textarea placeholder="Input an event" class="line__event__editor"></textarea></td>
                             <td class="bio_table__buttons">
                                 <a href="#" class="line__buttons__edit">Редактировать</a>

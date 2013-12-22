@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 public class HTTP extends Server {
     Socket socket;
+    BufferedReader br;
 
     public static void main(String[] args) throws Throwable {
         ServerSocket ss = new ServerSocket(8080); // создаем сокет сервера и привязываем его к вышеуказанному порту
@@ -33,7 +34,7 @@ public class HTTP extends Server {
     }
 
     public String make_request() throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         String text = "";
         String buff = "";
 

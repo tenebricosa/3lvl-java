@@ -1,14 +1,4 @@
-import freemarker.template.TemplateScalarModel;
-
-/**
- * Created with IntelliJ IDEA.
- * User: пользователь
- * Date: 19.12.13
- * Time: 0:48
- * To change this template use File | Settings | File Templates.
- */
-import freemarker.template.*;
-public class Bio implements TemplateScalarModel {
+public class Bio {
     public int id;
     public int year;
     public int month;
@@ -21,11 +11,23 @@ public class Bio implements TemplateScalarModel {
         this.text = text;
     }
 
-    @Override
-    public String getAsString() throws TemplateModelException {
-        return id + " " + year + " " + month + " " + text;
+    public String getRepresentation() {
+        return id + ":" + year + ":" + month + ":" + text;
     }
 
+    static Bio parseBio(String str) {
+
+        String[] b = str.split(":");
+        int id = Integer.parseInt(b[0]);
+        int year = Integer.parseInt(b[1]);
+        int month = Integer.parseInt(b[2]);
+        String text = b[3];
+        return new Bio(id, year, month, text);
+    }
+
+    public String getId(){
+        return ""+id;
+    }
 
     public String getYear() {
         return "" + year;
