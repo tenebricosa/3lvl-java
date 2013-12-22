@@ -21,21 +21,6 @@ $(document).ready(function(){
 
 	$(".new__post").click(createPost)
 
-	var bio = $.cookie("bio")
-	if (bio) {
-
-	   $.map($.evalJSON(bio), function(data){
-            var tr = createPost()
-            tr.removeClass('bio_table__row__edit')
-            console.log(data)
-            tr.find('.line__year').text(data.year)
-            tr.find('.line__month').text(data.month)
-            tr.find('.line__event').text(data.text)
-	   })
-
-	}
-
-	
 	function sort() {
 		 data = $('.content__bio_table .bio_table__row').sort(function(i,e){
 			
@@ -60,8 +45,8 @@ $(document).ready(function(){
             return {year:year,month:month,text:text}
 		})
 
-		var json = $.toJSON(data.get())
-		$.cookie("bio",json)
+//		var json = $.toJSON(data.get())
+//		$.cookie("bio",json)
 	}
 
 	sort()
@@ -75,6 +60,8 @@ $(document).ready(function(){
 		tr.find('.line__month').text(month)
 		tr.find('.line__event').text(text)
 		sort()
+
+		$.ajax('/api',{method:'post', data:{year:year, month:month, text:text}})
 	})
 
 	$('.content__bio_table').on('click','.line__buttons__edit', function(e){
