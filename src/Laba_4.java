@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URLDecoder;
 import java.util.*;
 
 import freemarker.template.*;
@@ -14,9 +15,7 @@ public class Laba_4 extends HTTP {
     int code = 200;
     Map<String, String> headers;
 
-    List<Bio> bioList = Arrays.asList(
-            new Bio(1, 2010, 12, "note1"),
-            new Bio(2, 2009, 4, "note2"));
+    List<Bio> bioList = new ArrayList<Bio>(10);
 
     public static void main(String[] args) throws Throwable {
         ServerSocket ss = new ServerSocket(8080); // создаем сокет сервера и привязываем его к вышеуказанному порту
@@ -38,6 +37,7 @@ public class Laba_4 extends HTTP {
     }
 
     public void run() {
+        read_database();
         try {
             make_request();
             if (url.contains("static")) {
@@ -57,7 +57,7 @@ public class Laba_4 extends HTTP {
 
         } catch (Throwable x) {
             code = 500;
-            System.out.println("Произошла ошибка " + x);
+            x.printStackTrace(new PrintStream(System.out));
             try {
                 make_response("Server error");
             } catch (Exception e) {
@@ -78,19 +78,98 @@ public class Laba_4 extends HTTP {
         return map;
     }
 
-    public String proceed_api() throws Exception {
+    public void proceed_api() throws Exception {
         if (method.equals("GET")) {
             String result = "Need POST method!";
             make_response(result);
 
         } else if (method.equals("POST")) {
-//            Bio o = new Bio(1, 2013, 1, "oLOLOLo");
-//            bio.put("bio", o);
-//            bio.put("qwe", o);
-        } else {
+            int contentLength = Integer.parseInt(headers.get("Content-Length"));
+            StringBuilder requestContent = new StringBuilder();
+            for (int i = 0; i < contentLength; i++) {
+                requestContent.append((char) br.read());
+            }
+            String result = URLDecoder.decode(requestContent.toString(), "UTF-8");
+            Map<String, String> params = getQueryMap(result);
+            int id = Integer.parseInt(params.get("id"));
+            String year = params.get("year");
+            String month = params.get("month");
+            String text = params.get("text");
+            Bio bi = new Bio(id, Integer.parseInt(year), Integer.parseInt(month), text);
+            Bio b = null;
 
+            for (Bio o : bioList) {
+                if (o.id == id) {
+                    b = o;
+                }
+            }
+            if (b != null) {
+                bioList.remove(b);
+            }
+            bioList.add(bi);
+
+        } else if (method.equals("DELETE")) {
+            int contentLength = Integer.parseInt(headers.get("Content-Length"));
+            StringBuilder requestContent = new StringBuilder();
+            for (int i = 0; i < contentLength; i++) {
+                requestContent.append((char) br.read());
+            }
+            String result = URLDecoder.decode(requestContent.toString(), "UTF-8");
+            Map<String, String> params = getQueryMap(result);
+            int id = Integer.parseInt(params.get("id"));
+            Bio b = null;
+            for (Bio o : bioList) {
+                if (o.id == id) {
+                    b = o;
+                }
+            }
+            if (b != null) {
+                bioList.remove(b);
+            }
+        } else {
         }
-        return "";
+        save_database();
+        make_response("ololo");
+    }
+
+    public void save_database() {
+        try {
+            PrintWriter out = new PrintWriter("database.txt");
+            for (Bio b : bioList) {
+                System.out.println(b.getRepresentation());
+                out.println(b.getRepresentation());
+            }
+            out.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void read_database() {
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader("database.txt"));
+            try {
+                StringBuilder sb = new StringBuilder();
+                String line = br.readLine();
+
+                while (line != null) {
+                    if (line.length() > 1) {
+                        bioList.add(Bio.parseBio(line));
+                    }
+                    sb.append(line);
+                    sb.append('\n');
+                    line = br.readLine();
+                }
+                String everything = sb.toString();
+            } finally {
+                br.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     public String make_request() throws Exception {
@@ -106,13 +185,6 @@ public class Laba_4 extends HTTP {
                 headers.put(head[0], head[1].trim());
             }
         }
-        System.out.println(headers);
-        System.out.println(headers.get("Content-Length"));
-                byte[] data = new byte[8];
-//        socket.getInputStream().read(data);
-
-//        System.out.println(request);
-//        System.out.println(headers);
 
         return request;
     }

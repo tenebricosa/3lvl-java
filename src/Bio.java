@@ -11,7 +11,23 @@ public class Bio {
         this.text = text;
     }
 
+    public String getRepresentation() {
+        return id + ":" + year + ":" + month + ":" + text;
+    }
 
+    static Bio parseBio(String str) {
+
+        String[] b = str.split(":");
+        int id = Integer.parseInt(b[0]);
+        int year = Integer.parseInt(b[1]);
+        int month = Integer.parseInt(b[2]);
+        String text = b[3];
+        return new Bio(id, year, month, text);
+    }
+
+    public String getId(){
+        return ""+id;
+    }
 
     public String getYear() {
         return "" + year;
