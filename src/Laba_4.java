@@ -41,9 +41,8 @@ public class Laba_4 extends HTTP {
         try {
             make_request();
             if (url.contains("static")) {
-                String path = getClass().getResource("").getPath();
-                path += "../../../src/";
-                path += url.replace("\\", "/");
+                String path = "C:\\Users\\пользователь\\Documents\\GitHub\\internet\\src";
+                path += url.replace("\\", "\\\\");
                 read_file(path);
             } else if (url.equals("/api")) {
                 proceed_api();

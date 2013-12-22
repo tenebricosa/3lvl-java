@@ -3,7 +3,7 @@
 <head>
     <title>Лабораторная работа 3</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="stylesheet" type="text/css" href="../static/stylesheet.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/stylesheet.css"/>
     <link href='http://fonts.googleapis.com/css?family=PT+Serif:400,700&subset=latin,cyrillic' rel='stylesheet'
           type='text/css'>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -27,10 +27,6 @@
 </aside>
 <div class="wrapper">
 
-    <form action="/api" method="POST">
-        <input type="text" name="test" value="olo">
-        <button type="submit">asd</button>
-    </form>
     <div class="wrapper__content">
         <ul class="content__menu">
             <li>
@@ -39,8 +35,13 @@
             <li>
                 <a href="bio.html" class="menu__item__active">Bio</a>
             </li>
-            <li class="menu__level">
+            <li class="needed">
                 <a href="contacts.html">Contacts</a>
+                <ul class="pseudo_menu">
+                    <li><a>item 1</a></li>
+                    <li><a>item 2</a></li>
+                    <li><a>item 3</a></li>
+                </ul>
             </li>
         </ul>
         <div class="content__main">

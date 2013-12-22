@@ -24,14 +24,19 @@ html, body {
 a {
 	text-decoration: none;
 	color: inherit;
+	cursor: pointer;
 }
 
 a:hover {
 	color: #617192;
 }
 
-ul {
-	list-style: none;
+.content__menu {
+    list-style-type: none;
+}
+
+.info_list {
+	list-style-type: disk;
 }
 
 .cover {
@@ -249,4 +254,31 @@ ul {
 
 .bio_table__row__edit {
 
+}
+
+.pseudo_menu {
+    list-style-type: none;
+    top: -33px;
+    left: 282px;
+    background-color: #CCD2A4;
+    opacity: 0.6;
+    padding: 10px 20px;
+    width: 51px;
+}
+
+.pseudo_menu li {
+      margin-right: 5px;
+}
+
+li ul.pseudo_menu {
+      position: absolute;
+      float: none;
+      display: none;
+}
+.needed:hover ul {
+    display: block;
+}
+
+.needed {
+    padding-right: 30px;
 }
